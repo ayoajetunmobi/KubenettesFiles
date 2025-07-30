@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:1.0
+    image: ajetunmobi/kuberepo1:0
     imagePullPolicy: Never
     ports:
     - containerPort: 80
