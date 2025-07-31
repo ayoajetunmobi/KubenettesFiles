@@ -1,0 +1,26 @@
+---
+services:
+  django_web:
+    container_name: django.com
+    build:
+      context: /home/ajeh/myapp
+      dockerfile: /home/ajeh/myapp/dockerfile
+    ports:
+      - 1000:8000
+    volumes:
+      - /home/ajeh/myapp/media:/home/myapp/media
+    networks:
+      - my-webdev
+    restart: always
+  nginx:
+    container_name: nginx.com
+    build:
+      context: /home/ajeh/nginx
+      dockerfile: /home/ajeh/nginx/dockerfile
+    ports:
+       - 2000:80
+    networks:
+       - my-webdev
+    restart: always
+networks:
+  my-webdev:
