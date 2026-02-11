@@ -1,0 +1,61 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: nginx-gateway
+  namespace: mywebapp
+spec:
+  gatewayClassName: nginx #gateway class implement by nginx controller fabric, kubectl get GatewayClass
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "www.example.com"
+    allowedRoutes:
+      namespaces:
+        from: Same
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: mywebapp
+ # annotations:
+  #   metallb.io/allow-shared-ip: "my-shared-ip-key" # set this on nodes that will share same ip address, but with a different port
+spec:
+  # type: NodePort
+  type: ClusterIP
+  # type: LoadBalancer
+  # loadBalancerIP: 192.168.234.134  # single ip from your pool 
+  selector:
+    app: nginx1
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+#     nodePort: 30007
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-httproute
+  namespace: mywebapp
+spec:
+  parentRefs:
+  - name: nginx-gateway
+  hostnames:
+  - "www.example.com"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    # headers:
+      # - name: na
+      #   value: cana
+      #   type: Exact
+    backendRefs:
+    - name: nginx-service
+      port: 8080

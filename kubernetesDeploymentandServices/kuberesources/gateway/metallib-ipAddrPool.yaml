@@ -1,0 +1,21 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: ippool-addresses
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.234.134/32
+  avoidBuggyIPs: true
+  serviceAllocation:
+    priority: 1
+    namespaces:
+      - mywebapp
+      - ingress-nginx
+    #namespaceSelectors:
+     # - matchLabels:
+      #    app=nginx1
+    #serviceSelectors:
+     # - matchLabels:
+      #     app: nginx1
+          #- {key: app, operator: In, values: [bar]}

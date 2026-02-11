@@ -1,0 +1,6 @@
+kind: Service
+metadata:
+  name: nginx-gateway-nginx
+  namespace: mywebapp
+  annotations:
+     metallb.io/allow-shared-ip: "my-shared-ip-key" # set this on nodes that will share same ip address, but with a>
