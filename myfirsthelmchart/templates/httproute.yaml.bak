@@ -1,0 +1,39 @@
+{{- if .Values.httpRoute.enabled -}}
+{{- $fullName := include "myfirsthelmchart.fullname" . -}} # values found in the _helpers.tpl file,
+# as {{- define "myfirsthelmchart.fullname" -}} value {{- end }} and inserted into the $fullname variable
+{{- $svcPort := $.Values.service.port -}} # the dollar sign says look for .Values from the root directory, inrespective of where the current file is placed
+apiVersion: gateway.networking.k8s.io/v1 # the hyphen (-) removes all trailing white spaces
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "myfirsthelmchart.labels" . | nindent 4 }} # using the defined value "myfirsthelmchart.label found in _helper.tpl file"
+  {{- with .Values.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- with .Values.httpRoute.parentRefs }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.httpRoute.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.httpRoute.rules }} #loop through the httpRoute.rules in values.yaml file
+    {{- with .matches }} # {{- with .matches }} checks if matches is not null and exist
+    - matches:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .filters }} # {{- with .filters }} checks if filters is not null and exist
+      filters:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+          weight: 1
+    {{- end }}
+{{- end }}

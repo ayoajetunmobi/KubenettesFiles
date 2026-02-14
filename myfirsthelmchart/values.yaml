@@ -1,0 +1,12 @@
+name: helm-app-deployment
+namespace: helmappnamespace
+label: helm-app-tut
+volume: helm-volume-configmap
+replicas: 1
+imagePolicy: Never
+
+configmap:
+  name: helm-config-map
+
+services:
+  name: servicename
